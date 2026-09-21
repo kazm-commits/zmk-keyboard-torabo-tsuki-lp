@@ -18,6 +18,101 @@
             key-positions = <28 29>;
             layers = <2>;
         };
+
+        ZenHankaku {
+            bindings = <&kp GRAVE>;
+            key-positions = <13 14>;
+        };
+
+        esc {
+            bindings = <&kp ESCAPE>;
+            key-positions = <14 15>;
+        };
+
+        backspace {
+            bindings = <&kp BACKSPACE>;
+            key-positions = <26 27>;
+        };
+
+        back_tab {
+            bindings = <&kp LS(TAB)>;
+            key-positions = <41 40>;
+        };
+
+        return {
+            bindings = <&kp RETURN>;
+            key-positions = <15 16>;
+        };
+
+        del {
+            bindings = <&kp DELETE>;
+            key-positions = <27 28>;
+        };
+
+        tab {
+            bindings = <&kp TAB>;
+            key-positions = <41 42>;
+        };
+
+        Lkakko {
+            bindings = <&kp LS(N8)>;
+            key-positions = <28 26>;
+        };
+
+        Lkagikakko {
+            bindings = <&kp RIGHT_BRACKET>;
+            key-positions = <25 28>;
+        };
+
+        dublequort {
+            bindings = <&kp LS(NUMBER_2)>;
+            key-positions = <21 20>;
+        };
+
+        dot {
+            bindings = <&kp DOT>;
+            key-positions = <35 34>;
+        };
+
+        quort {
+            bindings = <&kp LS(N7)>;
+            key-positions = <49 48>;
+        };
+
+        semicolon {
+            bindings = <&kp SEMI>;
+            key-positions = <19 20>;
+        };
+
+        comma {
+            bindings = <&kp COMMA>;
+            key-positions = <33 34>;
+        };
+
+        apos {
+            bindings = <&kp APOS>;
+            key-positions = <47 48>;
+        };
+
+        Rkakko {
+            bindings = <&kp LS(N9)>;
+            key-positions = <33 35>;
+        };
+
+        Rkagikakko {
+            bindings = <&kp BACKSLASH>;
+            key-positions = <33 36>;
+        };
+
+        MB1 {
+            bindings = <&mkp MB1>;
+            key-positions = <47 33>;
+        };
+
+        MB2 {
+            bindings = <&mkp MB2>;
+            key-positions = <48 34>;
+        };
     };
 
     macros {
