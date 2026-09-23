@@ -160,40 +160,6 @@
         };
     };
 
-    /* ================================================= */
-    /* トラックボール動作オーバーライド用リスナー          */
-    /* ================================================= */
-
-    /* [Layer 1] 精密ポインタ移動 */
-    tb_precision_listener {
-        compatible = "zmk,input-listener";
-        device = <&pointing_device>;
-        layers = <1>;
-        input-processors = <&zip_xy_scaler 1 3>;
-    };
-
-    /* [Layer 2] スクロール（標準速度） */
-    tb_scroll_listener {
-        compatible = "zmk,input-listener";
-        device = <&pointing_device>;
-        layers = <2>;
-        input-processors = 
-            <&zip_xy_scaler 1 16>,
-            <&zip_xy_to_scroll_mapper>;
-    };
-
-    /* [Layer 3] 精密スクロール */
-    tb_fine_scroll_listener {
-        compatible = "zmk,input-listener";
-        device = <&pointing_device>;
-        layers = <3>;
-        input-processors = 
-            <&zip_xy_scaler 1 48>,
-            <&zip_xy_to_scroll_mapper>;
-    };
-
-    /* ================================================= */
-
     keymap {
         compatible = "zmk,keymap";
 
