@@ -9,6 +9,36 @@
     flavor = "balanced";
 };
 
+/* ================================================= */
+/* トラックボールのレイヤー別挙動オーバーライド        */
+/* ZMK公式機能: Layer Specific Overrides を適用      */
+/* ================================================= */
+&pointing_listener {
+    /* [Layer 1] 細かく動く（精密ポインタ移動） */
+    precision_layer {
+        layers = <1>;
+        /* 移動量を 1/3 に減衰 */
+        input-processors = <&zip_xy_scaler 1 3>;
+    };
+
+    /* [Layer 2] スクロール（標準速度） */
+    scroll_layer {
+        layers = <2>;
+        input-processors = 
+            <&zip_xy_scaler 1 16>,
+            <&zip_xy_to_scroll_mapper>;
+    };
+
+    /* [Layer 3] 細かいスクロール（精密スクロール） */
+    fine_scroll_layer {
+        layers = <3>;
+        input-processors = 
+            <&zip_xy_scaler 1 48>,
+            <&zip_xy_to_scroll_mapper>;
+    };
+};
+/* ================================================= */
+
 / {
     combos {
         compatible = "zmk,combos";
