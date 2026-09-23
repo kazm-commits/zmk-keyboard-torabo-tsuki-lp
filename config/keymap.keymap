@@ -198,11 +198,11 @@
 
         layer_1 {
             bindings = <
-&trans  &trans  &trans     &trans        &trans        &trans                      &trans  &trans     &trans                  &trans                   &trans     &trans
-&trans  &trans  &trans     &trans        &trans        &trans                      &trans  &kp LC(Y)  &kp LC(LG(LEFT_ARROW))  &kp LC(LG(RIGHT_ARROW))  &kp LC(P)  &trans
-&trans  &trans  &mkp MCLK  &mkp RCLK     &mkp LCLK     &trans      &trans  &trans  &trans  &mkp LCLK  &mkp RCLK               &mkp MCLK                &kp LC(F)  &trans
-&trans  &trans  &trans     &out OUT_USB  &out OUT_BLE  &bt BT_NXT  &trans  &trans  &trans  &kp LC(Z)  &kp LC(X)               &kp LC(C)                &kp LC(V)  &trans
-&trans  &trans  &trans     &trans        &trans        &trans      &trans  &trans  &trans  &trans     &trans                  &trans                   &trans     &trans
+&trans  &trans  &trans     &trans        &trans        &trans                      &trans     &trans                  &trans                   &trans     &trans  &trans
+&trans  &trans  &trans     &trans        &trans        &trans                      &kp LC(Y)  &kp LC(LG(LEFT_ARROW))  &kp LC(LG(RIGHT_ARROW))  &kp LC(P)  &trans  &trans
+&trans  &trans  &mkp MCLK  &mkp RCLK     &mkp LCLK     &trans      &trans  &trans  &kp LC(A)  &mkp LCLK               &mkp RCLK                &kp LC(F)  &trans  &trans
+&trans  &trans  &trans     &out OUT_USB  &out OUT_BLE  &bt BT_NXT  &trans  &trans  &kp LC(Z)  &kp LC(X)               &kp LC(C)                &kp LC(V)  &trans  &trans
+&trans  &trans  &trans     &trans        &trans        &trans      &trans  &trans  &trans     &trans                  &trans                   &trans     &trans  &trans
             >;
         };
 
