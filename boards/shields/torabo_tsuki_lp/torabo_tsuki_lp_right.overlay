@@ -1,11 +1,70 @@
 #include "torabo_tsuki_lp.dtsi"
 #include <input/processors.dtsi>
 #include <dt-bindings/zmk/input_transform.h>
+#include <dt-bindings/zmk/pointing.h>
 
-&pointing_listener {
-    input-processors = <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>;
+/ {
+    /* ================================================= */
+    /* 慣性スクロール用のプロセッサ定義 (セントラル専用)   */
+    /* ================================================= */
+    scroll_inertia_norm: scroll_inertia_norm {
+        compatible = "zmk,input-processor-scroll-inertia";
+        #input-processor-cells = <0>;
+        axis = <0>;
+        scale = <1>;
+        scale-div = <7>;
+    };
+
+    scroll_inertia_fine: scroll_inertia_fine {
+        compatible = "zmk,input-processor-scroll-inertia";
+        #input-processor-cells = <0>;
+        axis = <0>;
+        scale = <1>;
+        scale-div = <21>;
+    };
 };
 
+/* ================================================= */
+/* 物理トラックボールのリスナー挙動設定                */
+/* ================================================= */
+&pointing_listener {
+    /* [Layer 0] デフォルト (2/3の速度) */
+    input-processors = 
+        <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
+        <&zip_xy_scaler 2 3>;
+
+    /* [Layer 1] マウスレイヤー (1/2の速度) */
+    precision_layer {
+        layers = <1>;
+        input-processors =
+            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
+            <&zip_xy_scaler 1 2>;
+    };
+
+    /* [Layer 2] スクロールレイヤー (1/7の速度 + 慣性) */
+    scroll_layer {
+        layers = <2>;
+        input-processors = 
+            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,
+            <&scroll_inertia_norm>,
+            <&zip_xy_scaler 1 7>, 
+            <&zip_xy_to_scroll_mapper>;
+    };
+
+    /* [Layer 3] 細かいスクロール (1/21の速度 + 慣性) */
+    fine_scroll_layer {
+        layers = <3>;
+        input-processors = 
+            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,
+            <&scroll_inertia_fine>,
+            <&zip_xy_scaler 1 21>, 
+            <&zip_xy_to_scroll_mapper>;
+    };
+};
+
+/* ================================================= */
+/* 分割キーボードの右側マトリクスオフセット (既存維持) */
+/* ================================================= */
 &size_s_transform {
     col-offset = <7>;
 };
