@@ -9,77 +9,7 @@
     flavor = "balanced";
 };
 
-/* ================================================= */
-/* トラックボールのレイヤー別挙動オーバーライド        */
-/* ================================================= */
-
-&pointing_listener {
-    /* ▼ [Layer 0] デフォルト (ルート設定) ▼ */
-    input-processors = 
-        <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
-        <&zip_xy_scaler 1 2>;
-
-    precision_layer {
-        layers = <1>;
-        input-processors =
-            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
-            <&zip_xy_scaler 1 3>;
-    };
-
-    scroll_layer {
-        layers = <2>;
-        /* 
-         * 追記: 慣性計算処理（scroll_inertia_norm）を減速（scaler）の前に挟み込む。
-         * 弾いた勢いを計算してから、1/7の速度に減衰させてスクロール出力する意図。
-         */
-        input-processors = 
-            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,
-            <&scroll_inertia_norm>,
-            <&zip_xy_scaler 1 7>, 
-            <&zip_xy_to_scroll_mapper>;
-    };
-
-    fine_scroll_layer {
-        layers = <3>;
-        /* 
-         * 追記: 精密用の慣性計算処理（scroll_inertia_fine）を挟み込む。
-         * こちらは1/21の減衰率に合わせた専用の余韻計算を行う意図。
-         */
-        input-processors = 
-            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,
-            <&scroll_inertia_fine>,
-            <&zip_xy_scaler 1 21>, 
-            <&zip_xy_to_scroll_mapper>;
-    };
-};
-
 / {
-    /* ================================================= */
-    /* 追記: 慣性スクロール用のプロセッサ（計算機）の定義  */
-    /* ================================================= */
-
-    /* [Layer 2用] 慣性スクロールプロセッサ */
-    scroll_inertia_norm: scroll_inertia_norm {
-        compatible = "zmk,input-processor-scroll-inertia";
-        #input-processor-cells = <0>;
-        /* 追記: axis = 0 は「縦横どちらにも慣性を効かせる（2D）」という意図 */
-        axis = <0>;
-        scale = <1>;
-        /* 追記: 直後の zip_xy_scaler 1 7 の分母と一致させることで、正確な物理演算（減衰）を実現する */
-        scale-div = <7>;
-    };
-
-    /* [Layer 3用] 慣性スクロールプロセッサ */
-    scroll_inertia_fine: scroll_inertia_fine {
-        compatible = "zmk,input-processor-scroll-inertia";
-        #input-processor-cells = <0>;
-        axis = <0>;
-        scale = <1>;
-        /* 追記: 直後の zip_xy_scaler 1 21 の分母と一致させる */
-        scale-div = <21>;
-    };
-    /* ================================================= */
-
     combos {
         compatible = "zmk,combos";
 
@@ -190,7 +120,6 @@
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
             bindings = <&macro_tap>, <&kp S &kp H>;
-
             label = "NEW_MACRO";
         };
     };
@@ -200,7 +129,6 @@
             compatible = "zmk,behavior-hold-tap";
             label = "LT_TO_LAYER_0";
             bindings = <&mo>, <&none>;
-
             #binding-cells = <2>;
             tapping-term-ms = <200>;
         };
@@ -209,7 +137,6 @@
             compatible = "zmk,behavior-hold-tap";
             label = "LT2";
             bindings = <&mo>, <&kp>;
-
             #binding-cells = <2>;
             tapping-term-ms = <200>;
             quick-tap-ms = <200>;
@@ -221,7 +148,6 @@
             compatible = "zmk,behavior-hold-tap";
             label = "MT2";
             bindings = <&kp>, <&kp>;
-
             #binding-cells = <2>;
             tapping-term-ms = <200>;
             quick-tap-ms = <200>;
