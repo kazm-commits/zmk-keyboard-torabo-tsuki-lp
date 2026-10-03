@@ -28,16 +28,58 @@
 
     scroll_layer {
         layers = <2>;
-        input-processors = <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,<&zip_xy_scaler 1 7>, <&zip_xy_to_scroll_mapper>;
+        /* 
+         * 追記: 慣性計算処理（scroll_inertia_norm）を減速（scaler）の前に挟み込む。
+         * 弾いた勢いを計算してから、1/7の速度に減衰させてスクロール出力する意図。
+         */
+        input-processors = 
+            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,
+            <&scroll_inertia_norm>,
+            <&zip_xy_scaler 1 7>, 
+            <&zip_xy_to_scroll_mapper>;
     };
 
     fine_scroll_layer {
         layers = <3>;
-        input-processors = <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,<&zip_xy_scaler 1 21>, <&zip_xy_to_scroll_mapper>;
+        /* 
+         * 追記: 精密用の慣性計算処理（scroll_inertia_fine）を挟み込む。
+         * こちらは1/21の減衰率に合わせた専用の余韻計算を行う意図。
+         */
+        input-processors = 
+            <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT)>,
+            <&scroll_inertia_fine>,
+            <&zip_xy_scaler 1 21>, 
+            <&zip_xy_to_scroll_mapper>;
     };
 };
 
 / {
+    /* ================================================= */
+    /* 追記: 慣性スクロール用のプロセッサ（計算機）の定義  */
+    /* ================================================= */
+
+    /* [Layer 2用] 慣性スクロールプロセッサ */
+    scroll_inertia_norm: scroll_inertia_norm {
+        compatible = "zmk,input-processor-scroll-inertia";
+        #input-processor-cells = <0>;
+        /* 追記: axis = 0 は「縦横どちらにも慣性を効かせる（2D）」という意図 */
+        axis = <0>;
+        scale = <1>;
+        /* 追記: 直後の zip_xy_scaler 1 7 の分母と一致させることで、正確な物理演算（減衰）を実現する */
+        scale-div = <7>;
+    };
+
+    /* [Layer 3用] 慣性スクロールプロセッサ */
+    scroll_inertia_fine: scroll_inertia_fine {
+        compatible = "zmk,input-processor-scroll-inertia";
+        #input-processor-cells = <0>;
+        axis = <0>;
+        scale = <1>;
+        /* 追記: 直後の zip_xy_scaler 1 21 の分母と一致させる */
+        scale-div = <21>;
+    };
+    /* ================================================= */
+
     combos {
         compatible = "zmk,combos";
 
@@ -193,41 +235,41 @@
 
         layer_0 {
             bindings = <
-&none  &none  &none            &none              &none                  &none                                             &none                      &none                 &none               &none             &none                    &none
-&none  &kp Q  &kp W            &mt2 LEFT_GUI D    &kp R                  &kp V                                             &sh                        &kp Y                 &mt2 RIGHT_GUI K    &kp P             &mt2 LEFT_BRACKET SLASH  &none
+&none  &none  &none            &none              &none              &none                  &none                                                       &none                      &none                 &none               &none             &none                    &none
+&none  &kp Q  &kp W            &mt2 LEFT_GUI D    &kp R              &kp V                                                                              &sh                        &kp Y                 &mt2 RIGHT_GUI K    &kp P             &mt2 LEFT_BRACKET SLASH  &none
 &none  &kp A  &mt2 LEFT_ALT S  &mt2 LEFT_SHIFT E  &mt2 LEFT_CONTROL T    &kp G        &none                  &none         &kp H                      &mt2 RIGHT_CONTROL U  &mt2 RIGHT_SHIFT I  &mt2 RIGHT_ALT O  &mt2 EQUAL MINUS         &none
-&none  &kp Z  &kp X            &kp C              &kp B                  &kp F        &kp SPACE              &kp SPACE     &kp J                      &kp N                 &kp M               &lt2 2 L          &lt2 1 INTERNATIONAL_1   &none
-&none  &none  &none            &none              &lt 3 INTERNATIONAL_5  &lt 2 SPACE  &lt 1 INTERNATIONAL_4  &lt 3 RETURN  &mt RIGHT_SHIFT BACKSPACE  &none                 &none               &none             &kp RET                  &none
+&none  &kp Z  &kp X            &kp C              &kp B              &kp F        &kp SPACE              &kp SPACE     &kp J                      &kp N                 &kp M               &lt2 2 L          &lt2 1 INTERNATIONAL_1   &none
+&none  &none  &none            &none              &lt 3 INTERNATIONAL_5  &lt 2 SPACE  &lt 1 INTERNATIONAL_4  &lt 3 RETURN  &mt RIGHT_SHIFT BACKSPACE  &none                      &none                 &none               &kp RET                  &none
             >;
         };
 
         layer_1 {
             bindings = <
-&trans  &trans  &trans     &trans        &trans        &trans                      &trans     &trans                  &trans                   &trans     &trans  &trans
-&trans  &trans  &trans     &trans        &trans        &trans                      &kp LC(Y)  &kp LC(LG(LEFT_ARROW))  &kp LC(LG(RIGHT_ARROW))  &kp LC(P)  &trans  &trans
-&trans  &trans  &mkp MCLK  &mkp RCLK     &mkp LCLK     &trans      &trans  &trans  &kp LC(A)  &mkp LCLK               &mkp RCLK                &kp LC(F)  &trans  &trans
-&trans  &trans  &trans     &out OUT_USB  &out OUT_BLE  &bt BT_NXT  &trans  &trans  &kp LC(Z)  &kp LC(X)               &kp LC(C)                &kp LC(V)  &trans  &trans
-&trans  &trans  &trans     &trans        &trans        &trans      &trans  &trans  &trans     &trans                  &trans                   &trans     &trans  &trans
+&trans  &trans  &trans     &trans        &trans        &trans                                      &trans     &trans                  &trans                   &trans     &trans     &trans  &trans
+&trans  &trans  &trans     &trans        &trans        &trans                                      &kp LC(Y)  &kp LC(LG(LEFT_ARROW))  &kp LC(LG(RIGHT_ARROW))  &kp LC(P)  &trans     &trans
+&trans  &trans  &mkp MCLK  &mkp RCLK     &mkp LCLK     &trans      &trans      &trans  &kp LC(A)   &mkp LCLK  &mkp RCLK               &kp LC(F)                &trans     &trans
+&trans  &trans  &trans     &out OUT_USB  &out OUT_BLE  &bt BT_NXT  &trans      &trans  &kp LC(Z)   &kp LC(X)  &kp LC(C)               &kp LC(V)                &trans     &trans
+&trans  &trans  &trans     &trans        &trans        &trans      &trans      &trans  &trans      &trans     &trans                  &trans                   &trans     &trans     &trans
             >;
         };
 
         layer_2 {
             bindings = <
-&trans  &trans           &trans     &trans          &trans           &trans                           &trans         &trans        &trans        &trans        &trans        &trans
-&trans  &kp LS(PAGE_UP)  &kp HOME   &kp UP_ARROW    &kp END          &mkp MB5                         &kp KP_PLUS    &kp N7        &kp N8        &kp N9        &kp KP_SLASH  &trans
-&trans  &kp PAGE_DOWN    &kp LEFT   &kp DOWN_ARROW  &kp RIGHT_ARROW  &mkp MB4         &trans  &trans  &kp LS(APOS)   &kp NUMBER_4  &kp N5        &kp NUMBER_6  &kp KP_MINUS  &trans
-&trans  &kp LC(Z)        &kp LC(X)  &kp LC(C)       &kp LC(V)        &kp PRINTSCREEN  &trans  &trans  &kp BACKSPACE  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp KP_DOT    &trans
-&trans  &trans           &trans     &trans          &trans           &trans           &trans  &trans  &kp N0         &trans        &trans        &trans        &trans        &trans
+&trans  &trans           &trans     &trans          &trans          &trans                                           &trans         &trans  &trans        &trans        &trans        &trans
+&trans  &kp LS(PAGE_UP)  &kp HOME   &kp UP_ARROW    &kp END         &mkp MB5                                         &kp KP_PLUS    &kp N7  &kp N8        &kp N9        &kp KP_SLASH  &trans
+&trans  &kp PAGE_DOWN    &kp LEFT   &kp DOWN_ARROW  &kp RIGHT_ARROW &mkp MB4         &trans  &trans  &kp LS(APOS)    &kp NUMBER_4   &kp N5  &kp NUMBER_6  &kp KP_MINUS  &trans
+&trans  &kp LC(Z)        &kp LC(X)  &kp LC(C)       &kp LC(V)       &kp PRINTSCREEN  &trans  &trans  &kp BACKSPACE   &kp NUMBER_1   &kp NUMBER_2  &kp NUMBER_3  &kp KP_DOT    &trans
+&trans  &trans           &trans     &trans          &trans          &trans           &trans  &trans  &kp N0          &trans         &trans  &trans        &trans        &trans
             >;
         };
 
         layer_3 {
             bindings = <
-&trans  &trans  &trans  &trans   &trans   &trans                  &trans  &trans            &trans            &trans                   &trans  &trans
-&trans  &kp F1  &kp F2  &kp F7   &kp F8   &none                   &trans  &kp LS(NUMBER_1)  &kp LS(SLASH)     &kp INTERNATIONAL_3      &trans  &trans
-&trans  &kp F3  &kp F4  &kp F9   &kp F10  &none   &trans  &trans  &trans  &kp LS(N3)        &kp LS(NUMBER_4)  &kp LS(INTERNATIONAL_3)  &trans  &trans
-&trans  &kp F5  &kp F6  &kp F11  &kp F12  &none   &trans  &trans  &trans  &kp LS(N5)        &kp LS(NUMBER_6)  &kp EQUAL                &trans  &trans
-&trans  &trans  &trans  &trans   &trans   &trans  &trans  &trans  &trans  &trans            &trans            &trans                   &trans  &trans
+&trans  &trans  &trans  &trans   &trans   &trans                                &trans  &trans            &trans            &trans                   &trans  &trans
+&trans  &kp F1  &kp F2  &kp F7   &kp F8   &none                                 &trans  &kp LS(NUMBER_1)  &kp LS(SLASH)     &kp INTERNATIONAL_3      &trans  &trans
+&trans  &kp F3  &kp F4  &kp F9   &kp F10  &none   &trans  &trans  &trans        &kp LS(N3)        &kp LS(NUMBER_4)  &kp LS(INTERNATIONAL_3)  &trans  &trans
+&trans  &kp F5  &kp F6  &kp F11  &kp F12  &none   &trans  &trans  &trans        &kp LS(N5)        &kp LS(NUMBER_6)  &kp EQUAL                &trans  &trans
+&trans  &trans  &trans  &trans   &trans   &trans  &trans  &trans  &trans        &trans            &trans            &trans                   &trans  &trans
             >;
         };
     };
