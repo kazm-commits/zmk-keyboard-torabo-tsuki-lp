@@ -166,7 +166,7 @@
         layer_0 {
             bindings = <
 &none  &none  &none            &none              &none                  &none                                                  &none                      &none                 &none               &none             &none                    &none
-&none  &kp Q  &kp L            &mt2 LEFT_GUI U    &kp R                  &kp V                                                  &kp J                      &kp G                 &mt2 RIGHT_GUI R    &kp P             &mt2 LEFT_BRACKET SLASH  &none
+&none  &kp Q  &kp L            &mt2 LEFT_GUI U    &kp Y                  &kp V                                                  &kp J                      &kp G                 &mt2 RIGHT_GUI R    &kp P             &mt2 LEFT_BRACKET SLASH  &none
 &none  &kp E  &mt2 LEFT_ALT I  &mt2 LEFT_SHIFT A  &mt2 LEFT_CONTROL O    &mt2 EQUAL MINUS  &none                  &none         &kp D                      &mt2 RIGHT_CONTROL T  &mt2 RIGHT_SHIFT K  &mt2 RIGHT_ALT S  &lt2 1 H                 &none
 &none  &kp Y  &kp X            &kp C              &xn                    &kp F             &kp SPACE              &kp SPACE     &kp W                      &kp N                 &kp M               &lt2 2 Z          &mt2 INTERNATIONAL_1 B   &none
 &none  &none  &none            &none              &lt 3 INTERNATIONAL_5  &lt 2 SPACE       &lt 1 INTERNATIONAL_4  &lt 3 RETURN  &mt RIGHT_SHIFT BACKSPACE  &none                 &none               &none             &kp RET                  &none
